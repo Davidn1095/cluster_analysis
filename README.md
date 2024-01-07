@@ -1,1 +1,39 @@
 # cluster_analysis
+
+# Read data from a text file, assuming tab-separated values with a header
+datos <- read.table("datoscluster1.txt", header = TRUE, sep = "\t")
+
+# Calculate the Euclidean distance matrix for the dataset
+distancia <- dist(datos)
+
+# Perform hierarchical clustering using the distance matrix
+jerarquicobasico <- hclust(distancia)
+
+# Visualize the hierarchical clustering as a dendrogram
+plot(jerarquicobasico)
+
+# Create clusters by cutting the dendrogram at a specified height for 3 clusters
+solucion_basica <- cutree(jerarquicobasico, k = 3)
+
+# Set row names of the data frame for better visualization
+row.names(datos) <- as.character(datos$Comunidad_Autonoma)
+
+# Recalculate the distance matrix after setting row names
+distancia <- dist(datos)
+
+# Redo hierarchical clustering with the updated data
+jerarquicobasico <- hclust(distancia)
+
+# Plot the dendrogram and highlight 3 clusters with different colors
+plot(as.dendrogram(jerarquicobasico))
+rect.hclust(jerarquicobasico, k = 3, border = 3:5)
+
+# Calculate and display the cophenetic correlation coefficient
+cor(x = distancia, cophenetic(jerarquicobasico))
+
+# Remove the first column from the dataset for k-means clustering
+datoscluster2 <- datos[,-1] # Adjust based on the actual data
+
+# Execute k-means clustering on the modified dataset
+# Specify 3 as the number of clusters, and perform 25 random starts
+kmeans_result <- kmeans(datoscluster2, centers = 3, nstart = 25)
